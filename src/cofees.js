@@ -1,6 +1,8 @@
 import React from 'react';
 import { List, Datagrid, TextField, BooleanField, EditButton, Edit, Create, SimpleForm, DisabledInput, ReferenceInput, SelectInput, ImageField, ImageInput, NumberInput } from 'admin-on-rest';
 
+import { showNotification as showNotificationAction } from 'admin-on-rest';
+
 import CoffeeEditActions from './components/CoffeeEditActions';
 
 import { BASE_URL } from './rest-clients';
@@ -53,7 +55,7 @@ export const CoffeeEdit = (props) => (
                 <SelectInput optionText="description" />
             </ReferenceInput>
             <NumberInput source="altitude" />
-            <ImageInput source="image" label="Picture" accept="image/*">
+            <ImageInput source="image" label="Picture" accept="image/*" maxSize={1048576 * 10}>
                 <CustomImageField source="url"/>
             </ImageInput>
         </SimpleForm>

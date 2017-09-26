@@ -6,12 +6,22 @@ export const restClient = loopbackRestClient(BASE_URL);
 
 export const authClient = loopbackAuthClient(BASE_URL);
 
-const convertFileToBase64 = file =>
+const Jimp = window.Jimp;
+
+const readFileAndProcess = file =>
     new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file.rawFile);
+        reader.readAsArrayBuffer(file.rawFile);
 
-        reader.onload = () => resolve(reader.result);
+        reader.onload = () => {
+            Jimp.read(reader.result).then(function (lenna) {
+                lenna.resize(768, Jimp.AUTO)
+                     .quality(98)
+                     .getBase64(Jimp.AUTO, function (err, src) {
+                        resolve(src);
+                     });
+            });
+        }
         reader.onerror = reject;
     });
 
@@ -28,7 +38,7 @@ export const addUploadCapabilities = requestHandler => (type, resource, params) 
                 p => p.rawFile && p.rawFile instanceof File
             );
 
-            return Promise.all(newPictures.map(convertFileToBase64))
+            return Promise.all(newPictures.map(readFileAndProcess))
                 .then(base64Pictures =>
                     base64Pictures.map(picture64 => ({
                         base64: picture64,
